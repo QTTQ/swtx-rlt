@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        #tip {
+            position:absolute;
+            font-size:12px;
+            line-height:1.8em;
+            color:#FFF;
+            display:inline-block;
+            padding:0 .4em;
+            background:rgba(0, 0, 0, .6);
+        }
+    </style>
+</head>
+<body>
+<div id="mapbar" style="width:500px;height:500px"></div>
+<div>
+    <input id="txtDataUrl" value="data.json" type="text"/>
+    <input id="btnEnable" data-enabled="0" value="启用热力图" type="button"/><br/>
+    <input id="btnShow" value="显示热力图" type="button"/>
+    <input id="btnHide" value="隐藏热力图" type="button"/>
+    <span id="tip"></span>
+</div>
+<script src="http://api.mapbar.com/api/mapbard31.3.js"></script>
+<script>
+    var btnEnable = document.getElementById('btnEnable'),
+            txtDataUrl = document.getElementById('txtDataUrl'),
+            btnShow = document.getElementById('btnShow'),
+            btnHide = document.getElementById('btnHide'),
+            tip = document.getElementById('tip');
+    var maplet = null, marker;
+    function initMap() {
+        maplet = new Maplet("mapbar");
+        maplet.centerAndZoom(new MPoint(116.38672, 39.90805), 7);
+        maplet.addControl(new MStandardControl());        
+    }
+    function addMarker () {
+        marker = new MMarker(
+            new MPoint(116.38672, 39.90805),
+            new MIcon("http://open.mapbar.com/apidoc/images/icon1.gif", 22, 34),
+            new MInfoWindow("信息窗口标题", "信息窗口内容")
+        );
+        maplet.addOverlay(marker);
+    }
+    initMap();
+    addMarker();
+
+    MEvent.bindDom(btnEnable, 'click', maplet, function (evt) {
+        var enabled = + (btnEnable.dataset ? btnEnable.dataset['enabled'] : btnEnable.getAttribute('data-enabled'));
+        if (enabled) {
+            maplet.disableHeatmap && maplet.disableHeatmap();
+            btnEnable.dataset ? btnEnable.dataset['enabled'] = 0 : btnEnable.setAttribute('data-enabled', 0);
+            btnEnable.value = '启用热力图';
+        } else {
+            Maplet.plugin('http://api.mapbar.com/api/plugin/MHeatMap.js', function (MHeatMap) {
+                ajax(txtDataUrl.value, function (result) {
+                    var heatMap = maplet.enableHeatmap({
+                        minZoomLevel : 4,
+                        radius : 25,
+                        dataMax : 300
+                    }, result);
+                    MEvent.addListener(maplet, 'mousemove', function (evt, point) {
+                        var pos = maplet.toScreenCoordinate(point['lon'] + ',' + point['lat']);
+                        tip.innerHTML = heatMap.getDataAt(pos[0], pos[1]);
+                        tip.style.top = pos[1] + 25 + 'px';
+                        tip.style.left = pos[0] + 25 + 'px';
+                    });
+                });
+            });
+        //    btnEnable.dataset['enabled'] = 1;
+            btnEnable.dataset ? btnEnable.dataset['enabled'] = 1 : btnEnable.setAttribute('data-enabled', 1);
+            btnEnable.value = '禁用热力图';
+        }
+    });
+    MEvent.bindDom(btnShow, 'click', maplet, function (evt) {
+        maplet.showHeatmap && maplet.showHeatmap();
+    });
+    MEvent.bindDom(btnHide, 'click', maplet, function (evt) {
+        maplet.hideHeatmap && maplet.hideHeatmap();
+    });
+
+    function ajax(url, fun) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                fun(JSON.parse(xhr.responseText));
+            }
+        };
+        xhr.open('GET', url, true);
+        xhr.send(null);
+    }
+</script>
+</body>
+</html>
