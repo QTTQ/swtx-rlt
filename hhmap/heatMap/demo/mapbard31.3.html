@@ -27,6 +27,7 @@
         <span id="tip"></span>
     </div>
     <script src="http://api.mapbar.com/api/mapbard31.3.js"></script>
+    <script src="./gridmap-2.3-plugin.min.js"></script>
     <script>
         var btnEnable = document.getElementById('btnEnable'),
             txtDataUrl = document.getElementById('txtDataUrl'),
@@ -68,9 +69,14 @@
                 btnEnable.dataset ? btnEnable.dataset['enabled'] = 0 : btnEnable.setAttribute('data-enabled', 0);
                 btnEnable.value = '启用热力图';
             } else {
-                Maplet.plugin('./MHeatMap.js', function(MHeatMap) {
-                    ajax(txtDataUrl.value, function(result) {
-                        addMarker(result);
+                // Maplet.plugin('./MHeatMap.js', function(MHeatMap) {
+                Maplet.plugin('./mperheatmap.js', function(MHeatMap) {
+
+                    // Maplet.plugin('./gridmap-2.3-plugin.min.js', function(MHeatMap) {
+
+                    ajax('./data.json', function(result) {
+                        // addMarker(result);
+                        // gridmap(result);
 
                         var heatMap = maplet.enableHeatmap({
                             minZoomLevel: 4,

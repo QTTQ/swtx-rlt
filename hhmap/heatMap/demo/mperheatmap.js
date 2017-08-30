@@ -344,6 +344,7 @@
 //             g = { create: function(a) { return new f(a) }, register: function(b, c) { a.plugins[b] = c } };
 //         return g
 //     });
+
 /**
  * MapbarApiPlugin-MHeatMap
  * version: 1.1.0
@@ -351,7 +352,15 @@
  * time:Wed Oct 28 2015 14:36:38 GMT+0800 (涓浗鏍囧噯鏃堕棿)
  */
 
-function MHeatMap(a) { this._data = { data: [], min: 0, max: 1 }, this._opts = { autoRender: !0 }, this.setOptions(a, !1), this._visibility = !0, this._needRef = !1, this.type = null }
+function MHeatMap(a) {
+    this._data = {
+        data: [],
+        min: 0,
+        max: 1
+    }, this._opts = {
+        autoRender: !0
+    }, this.setOptions(a, !1), this._visibility = !0, this._needRef = !1, this.type = null
+}
 
 function _initHeatMapPlgin(a) {
     var b = a;
@@ -363,24 +372,51 @@ function _initHeatMapPlgin(a) {
                 this.heatmapLayer = new MCanvas("heatmapLayer", 0, 0, this.width, this.height, !0, 4, "", this.mapContainer).div
             } else "h5" === c && (this.heatmapLayer = document.createElement("div"), this.heatmapLayer.style.position = "absolute", this.heatmapLayer.style.zIndex = 3, document.getElementById("mapContainer").appendChild(this.heatmapLayer));
         return this._heatmap || (this._heatmap = new MHeatMap(a).setMap(this), this.heatmapLayer.appendChild(this._heatmap.getContainer()), b && this._heatmap.setData(b)), this._heatmap
-    }, b.prototype.disableHeatmap = function() { return this._heatmap && (this.heatmapLayer && this.heatmapLayer.removeChild(this._heatmap.getContainer()), this._heatmap.finalize(), this._heatmap = null), this }, b.prototype.showHeatmap = function() { return this._heatmap && this._heatmap.show(), this }, b.prototype.hideHeatmap = function() { return this._heatmap && this._heatmap.hide(), this }, b.prototype.getHeatmap = function() { return this._heatmap }
+    }, b.prototype.disableHeatmap = function() {
+        return this._heatmap && (this.heatmapLayer && this.heatmapLayer.removeChild(this._heatmap.getContainer()), this._heatmap.finalize(), this._heatmap = null), this
+    }, b.prototype.showHeatmap = function() {
+        return this._heatmap && this._heatmap.show(), this
+    }, b.prototype.hideHeatmap = function() {
+        return this._heatmap && this._heatmap.hide(), this
+    }, b.prototype.getHeatmap = function() {
+        return this._heatmap
+    }
 }
 MHeatMap.prototype = {
         constructor: MHeatMap,
-        setOptions: function(a) { var b, c, d = this._opts; if ("object" == typeof a) { b = Object.prototype.hasOwnProperty; for (var e in a) b.call(a, e) && "dataMax" != e && "dataMin" != e && (d[e] = a[e]); return "number" == typeof a.dataMin && (d.dataMin = this._data.min = a.dataMin), "number" == typeof a.dataMax && (d.dataMax = this._data.max = a.dataMax), "function" != typeof d.onExtremaChange && delete d.onExtremaChange, this._updateZoomLevelRange(), (c = this._heatmap) && (c.updateStoreConfig(d), d.autoRender && c.configure(d)), this } },
-        setMap: function(a) { return this._map = a || this._map, this.type = "undefined" != typeof Maplet && this._map instanceof Maplet ? "pc" : "h5", this._updateZoomLevelRange(), this._update(!0), this._listenEvent(), "pc" === this.type && this._visible(!0) && this._refresh(), this },
-        update: function() { return this._refresh(), this },
+        setOptions: function(a) {
+            var b, c, d = this._opts;
+            if ("object" == typeof a) {
+                b = Object.prototype.hasOwnProperty;
+                for (var e in a) b.call(a, e) && "dataMax" != e && "dataMin" != e && (d[e] = a[e]);
+                return "number" == typeof a.dataMin && (d.dataMin = this._data.min = a.dataMin), "number" == typeof a.dataMax && (d.dataMax = this._data.max = a.dataMax), "function" != typeof d.onExtremaChange && delete d.onExtremaChange, this._updateZoomLevelRange(), (c = this._heatmap) && (c.updateStoreConfig(d), d.autoRender && c.configure(d)), this
+            }
+        },
+        setMap: function(a) {
+            return this._map = a || this._map, this.type = "undefined" != typeof Maplet && this._map instanceof Maplet ? "pc" : "h5", this._updateZoomLevelRange(), this._update(!0), this._listenEvent(), "pc" === this.type && this._visible(!0) && this._refresh(), this
+        },
+        update: function() {
+            return this._refresh(), this
+        },
         setData: function(a) {
             var b = Number.MAX_VALUE,
                 c = Number.MIN_VALUE,
                 d = this._opts,
                 e = d.valueField;
-            return a instanceof Array && (!a[0].hasOwnProperty(e) || d.dataMin || d.dataMax ? (b = d.dataMin || 0, c = d.dataMax || 5) : a.forEach(function(a) { b = Math.min(a[e], b), c = Math.max(a[e], c) }), this._data = { data: a, min: b, max: c }, this._opts.autoRender && this._refresh()), this
+            return a instanceof Array && (!a[0].hasOwnProperty(e) || d.dataMin || d.dataMax ? (b = d.dataMin || 0, c = d.dataMax || 5) : a.forEach(function(a) {
+                b = Math.min(a[e], b), c = Math.max(a[e], c)
+            }), this._data = {
+                data: a,
+                min: b,
+                max: c
+            }, this._opts.autoRender && this._refresh()), this
         },
         addData: function(a) {
             var b = this,
                 c = this._map;
-            if (a instanceof Array) a.forEach(function(a) { b.addData(a) });
+            if (a instanceof Array) a.forEach(function(a) {
+                b.addData(a)
+            });
             else if (this._data.data.push(a), c) {
                 if ("pc" === this.type) {
                     var d = c.toScreenCoordinate(a.lon + "," + a.lat);
@@ -390,16 +426,44 @@ MHeatMap.prototype = {
             }
             return this
         },
-        getDataAt: function(a, b) { var c = this._heatmap; return c ? c.getValueAt({ x: a, y: b }) : null },
-        getData: function() { var a, b = null; return (a = this._heatmap) && (b = a.getData()), b },
-        getDataURL: function() { var a, b = null; return (a = this._heatmap) && (b = a.getDataURL()), b },
-        setDataMax: function(a) { return this._heatmap.setDataMax(this._data.max = a), this },
-        setDataMin: function(a) { return this._heatmap.setDataMin(this._data.min = a), this },
-        hide: function() { return this._visibility && (this._visibility = !1, this._visible()), this },
-        show: function() { return this._visibility || (this._visibility = !0, this._visible(!0) && this._needRef && (this._needRef = !1, this._refresh())), this },
-        isVisible: function() { return this._visibility },
-        getContainer: function() { var a = this._heatmap; return a ? a.getCanvas() : null },
-        finalize: function() { var a; for (a in this) this.hasOwnProperty(a) && (this[a] = null, delete this[a]) },
+        getDataAt: function(a, b) {
+            var c = this._heatmap;
+            return c ? c.getValueAt({
+                x: a,
+                y: b
+            }) : null
+        },
+        getData: function() {
+            var a, b = null;
+            return (a = this._heatmap) && (b = a.getData()), b
+        },
+        getDataURL: function() {
+            var a, b = null;
+            return (a = this._heatmap) && (b = a.getDataURL()), b
+        },
+        setDataMax: function(a) {
+            return this._heatmap.setDataMax(this._data.max = a), this
+        },
+        setDataMin: function(a) {
+            return this._heatmap.setDataMin(this._data.min = a), this
+        },
+        hide: function() {
+            return this._visibility && (this._visibility = !1, this._visible()), this
+        },
+        show: function() {
+            return this._visibility || (this._visibility = !0, this._visible(!0) && this._needRef && (this._needRef = !1, this._refresh())), this
+        },
+        isVisible: function() {
+            return this._visibility
+        },
+        getContainer: function() {
+            var a = this._heatmap;
+            return a ? a.getCanvas() : null
+        },
+        finalize: function() {
+            var a;
+            for (a in this) this.hasOwnProperty(a) && (this[a] = null, delete this[a])
+        },
         _refresh: function() {
             var a = this._heatmap,
                 b = this._data;
@@ -425,8 +489,12 @@ MHeatMap.prototype = {
                 }), a
             }
         },
-        _showCanvas: function() { this._heatmap.getCanvas().style.display = "block" },
-        _hideCanvas: function() { this._heatmap.getCanvas().style.display = "none" },
+        _showCanvas: function() {
+            this._heatmap.getCanvas().style.display = "block"
+        },
+        _hideCanvas: function() {
+            this._heatmap.getCanvas().style.display = "none"
+        },
         _setCanvasPosition: function(a, b) {
             var c = this._heatmap.getCanvas().style;
             a = a || 0, b = b || 0, c.left = a + "px", c.top = b + "px"
@@ -434,9 +502,21 @@ MHeatMap.prototype = {
         _listenEvent: function() {
             var a = this._map,
                 b = this;
-            "pc" === this.type ? (MEvent.addListener(a, "zoom", function() { b._hideCanvas(), b._opts.autoRender && b._onZoom.apply(b, arguments) }), MEvent.addListener(a, "pan", function() { b._setCanvasPosition(a.moveX - a.downX, a.moveY - a.downY), b._opts.autoRender && b._onPan.apply(b, arguments) })) : (MEvent.bind(a, "zoom_changed", function() { b._heatmap.hideCanvas(), b._opts.autoRender && b._onZoom.apply(b, arguments) }), MEvent.bind(a, "dragend", function() { b._opts.autoRender && b._onPan.apply(b, arguments) })), MEvent.bind(a, "resize", function() { b._onResize.apply(b, arguments) })
+            "pc" === this.type ? (MEvent.addListener(a, "zoom", function() {
+                b._hideCanvas(), b._opts.autoRender && b._onZoom.apply(b, arguments)
+            }), MEvent.addListener(a, "pan", function() {
+                b._setCanvasPosition(a.moveX - a.downX, a.moveY - a.downY), b._opts.autoRender && b._onPan.apply(b, arguments)
+            })) : (MEvent.bind(a, "zoom_changed", function() {
+                b._heatmap.hideCanvas(), b._opts.autoRender && b._onZoom.apply(b, arguments)
+            }), MEvent.bind(a, "dragend", function() {
+                b._opts.autoRender && b._onPan.apply(b, arguments)
+            })), MEvent.bind(a, "resize", function() {
+                b._onResize.apply(b, arguments)
+            })
         },
-        _onZoom: function(a) { this._visible(!0, a) && this._update() },
+        _onZoom: function(a) {
+            this._visible(!0, a) && this._update()
+        },
         _visible: function(a, b) {
             var c = !1,
                 d = this._map,
@@ -444,8 +524,12 @@ MHeatMap.prototype = {
                 f = this._opts;
             return d && ("number" != typeof b && (b = "pc" === this.type ? this._map.getZoomLevel() : this._map.zoom()), a && this._visibility && b >= f.minZoomLevel && b <= f.maxZoomLevel ? (e.getCanvas().style.display = "block", c = !0) : (e.getCanvas().style.display = "none", c = !1)), c
         },
-        _onPan: function() { this._update() },
-        _onResize: function() { this._update() },
+        _onPan: function() {
+            this._update()
+        },
+        _onResize: function() {
+            this._update()
+        },
         _update: function(a) {
             var b = this._map;
             if (b) {
@@ -456,10 +540,40 @@ MHeatMap.prototype = {
             }
         }
     },
-    function(a, b, c) { b[a] = c(), "undefined" != typeof window.Maplet ? window.Maplet && Maplet.define && Maplet.define("MHeatMap", function() { _initHeatMapPlgin(b) }) : MPlugin.define && MPlugin.define("MHeatMap", function() { _initHeatMapPlgin(b) }) }("h337", "undefined" != typeof MMap ? MMap : Maplet, function() {
-        var a = { defaultRadius: 40, defaultRenderer: "canvas2d", defaultGradient: { .25: "rgb(0,0,255)", .55: "rgb(0,255,0)", .85: "yellow", 1: "rgb(255,0,0)" }, defaultMaxOpacity: 1, defaultMinOpacity: 0, defaultBlur: .85, defaultXField: "x", defaultYField: "y", defaultValueField: "value", defaultWidth: 300, defaultHeight: 300, plugins: {} },
+    function(a, b, c) {
+        console.log(a);
+        console.log(b);
+        console.log(c);
+
+        b[a] = c(), "undefined" != typeof window.Maplet ? window.Maplet && Maplet.define && Maplet.define("MHeatMap", function() {
+            _initHeatMapPlgin(b)
+        }) : MPlugin.define && MPlugin.define("MHeatMap", function() {
+            _initHeatMapPlgin(b)
+        })
+    }("h337", "undefined" != typeof MMap ? MMap : Maplet, function() {
+        var a = {
+                defaultRadius: 40,
+                defaultRenderer: "canvas2d",
+                defaultGradient: {
+                    .25: "rgb(0,0,255)",
+                    .55: "rgb(0,255,0)",
+                    .85: "yellow",
+                    1: "rgb(255,0,0)"
+                },
+                defaultMaxOpacity: 1,
+                defaultMinOpacity: 0,
+                defaultBlur: .85,
+                defaultXField: "x",
+                defaultYField: "y",
+                defaultValueField: "value",
+                defaultWidth: 300,
+                defaultHeight: 300,
+                plugins: {}
+            },
             b = function() {
-                var b = function(a) { this._coordinator = {}, this._data = [], this._radi = [], this._min = 0, this._max = 1, this._xField = a.xField || a.defaultXField, this._yField = a.yField || a.defaultYField, this._valueField = a.valueField || a.defaultValueField, a.radius && (this._cfgRadius = a.radius) },
+                var b = function(a) {
+                        this._coordinator = {}, this._data = [], this._radi = [], this._min = 0, this._max = 1, this._xField = a.xField || a.defaultXField, this._yField = a.yField || a.defaultYField, this._valueField = a.valueField || a.defaultValueField, a.radius && (this._cfgRadius = a.radius)
+                    },
                     c = a.defaultRadius;
                 return b.prototype = {
                     _organiseData: function(a, b) {
@@ -471,7 +585,14 @@ MHeatMap.prototype = {
                             i = this._min,
                             j = a[this._valueField] || 1,
                             k = a.radius || this._cfgRadius || c;
-                        return g[d] || (g[d] = [], f[d] = []), g[d][e] ? g[d][e] += j : (g[d][e] = j, f[d][e] = k), g[d][e] > h ? (b ? this.setDataMax(g[d][e]) : this._max = g[d][e], !1) : { x: d, y: e, value: j, radius: k, min: i, max: h }
+                        return g[d] || (g[d] = [], f[d] = []), g[d][e] ? g[d][e] += j : (g[d][e] = j, f[d][e] = k), g[d][e] > h ? (b ? this.setDataMax(g[d][e]) : this._max = g[d][e], !1) : {
+                            x: d,
+                            y: e,
+                            value: j,
+                            radius: k,
+                            min: i,
+                            max: h
+                        }
                     },
                     _updateRadius: function() {
                         var a, b, c, d, e = this._radi,
@@ -498,16 +619,34 @@ MHeatMap.prototype = {
                             b = this._data,
                             c = this._radi;
                         for (var d in b)
-                            for (var e in b[d]) a.push({ x: d, y: e, radius: c[d][e], value: b[d][e] });
-                        return { min: this._min, max: this._max, data: a }
+                            for (var e in b[d]) a.push({
+                                x: d,
+                                y: e,
+                                radius: c[d][e],
+                                value: b[d][e]
+                            });
+                        return {
+                            min: this._min,
+                            max: this._max,
+                            data: a
+                        }
                     },
-                    _onExtremaChange: function() { this._coordinator.emit("extremachange", { min: this._min, max: this._max }) },
+                    _onExtremaChange: function() {
+                        this._coordinator.emit("extremachange", {
+                            min: this._min,
+                            max: this._max
+                        })
+                    },
                     addData: function() {
                         if (arguments[0].length > 0)
                             for (var a = arguments[0], b = a.length; b--;) this.addData.call(this, a[b]);
                         else {
                             var c = this._organiseData(arguments[0], !0);
-                            c && this._coordinator.emit("renderpartial", { min: this._min, max: this._max, data: [c] })
+                            c && this._coordinator.emit("renderpartial", {
+                                min: this._min,
+                                max: this._max,
+                                data: [c]
+                            })
                         }
                         return this
                     },
@@ -519,11 +658,26 @@ MHeatMap.prototype = {
                         return this._max = a.max, this._min = a.min || 0, this._onExtremaChange(), this._coordinator.emit("renderall", this._getInternalData()), this
                     },
                     removeData: function() {},
-                    setDataMax: function(a) { return this._max = a, this._onExtremaChange(), this._coordinator.emit("renderall", this._getInternalData()), this },
-                    setDataMin: function(a) { return this._min = a, this._onExtremaChange(), this._coordinator.emit("renderall", this._getInternalData()), this },
-                    setCoordinator: function(a) { this._coordinator = a },
-                    _getInternalData: function() { return this._updateRadius(), { max: this._max, min: this._min, data: this._data, radi: this._radi } },
-                    getData: function() { return this._unOrganizeData() }
+                    setDataMax: function(a) {
+                        return this._max = a, this._onExtremaChange(), this._coordinator.emit("renderall", this._getInternalData()), this
+                    },
+                    setDataMin: function(a) {
+                        return this._min = a, this._onExtremaChange(), this._coordinator.emit("renderall", this._getInternalData()), this
+                    },
+                    setCoordinator: function(a) {
+                        this._coordinator = a
+                    },
+                    _getInternalData: function() {
+                        return this._updateRadius(), {
+                            max: this._max,
+                            min: this._min,
+                            data: this._data,
+                            radi: this._radi
+                        }
+                    },
+                    getData: function() {
+                        return this._unOrganizeData()
+                    }
                 }, b
             }(),
             c = function() {
@@ -531,7 +685,10 @@ MHeatMap.prototype = {
                     var c = a.container,
                         d = this.shadowCanvas = document.createElement("canvas"),
                         e = this.canvas = a.canvas || document.createElement("canvas"),
-                        f = (this._renderBoundaries = [1e4, 1e4, 0, 0], c ? getComputedStyle(c) : { width: (a.width || a.defaultWidth) + "px", height: (a.height || a.defaultHeight) + "px" });
+                        f = (this._renderBoundaries = [1e4, 1e4, 0, 0], c ? getComputedStyle(c) : {
+                            width: (a.width || a.defaultWidth) + "px",
+                            height: (a.height || a.defaultHeight) + "px"
+                        });
                     e.className = "heatmap-canvas", this._width = e.width = d.width = +f.width.replace(/px/, ""), this._height = e.height = d.height = +f.height.replace(/px/, ""), this.shadowCtx = d.getContext("2d"), this.ctx = e.getContext("2d"), e.style.cssText = d.style.cssText = "position:absolute;left:0;top:0;", c && (c.style.position = "relative"), c && c.appendChild(e), this._palette = b(a), this._templates = {}, this._setStyles(a)
                 }
                 var b = function(a) {
@@ -566,9 +723,18 @@ MHeatMap.prototype = {
                                 var k = i[j],
                                     l = a[h][k],
                                     m = e[h][k];
-                                b.push({ x: h, y: k, value: l, radius: m })
+                                b.push({
+                                    x: h,
+                                    y: k,
+                                    value: l,
+                                    radius: m
+                                })
                             }
-                        return { min: c, max: d, data: b }
+                        return {
+                            min: c,
+                            max: d,
+                            data: b
+                        }
                     };
                 return a.prototype = {
                     setSize: function(a, b) {
@@ -576,14 +742,30 @@ MHeatMap.prototype = {
                             d = this.shadowCanvas;
                         this._width = c.width = d.width = a, this._height = c.height = d.height = b
                     },
-                    getCanvas: function() { return this.canvas },
-                    renderPartial: function(a) { this._drawAlpha(a), this._colorize() },
-                    renderAll: function(a) { this._clear(), this._drawAlpha(d(a)), this._colorize() },
-                    _updateGradient: function(a) { this._palette = b(a) },
-                    updateConfig: function(a) { a.gradient && this._updateGradient(a), this._setStyles(a) },
-                    setDimensions: function(a, b) { this._width = a, this._height = b, this.canvas.width = this.shadowCanvas.width = a, this.canvas.height = this.shadowCanvas.height = b },
-                    _clear: function() { this.shadowCtx.clearRect(0, 0, this._width, this._height), this.ctx.clearRect(0, 0, this._width, this._height) },
-                    _setStyles: function(a) { this._blur = 0 == a.blur ? 0 : a.blur || a.defaultBlur, a.backgroundColor && (this.canvas.style.backgroundColor = a.backgroundColor), this._opacity = 255 * (a.opacity || 0), this._maxOpacity = 255 * (a.maxOpacity || a.defaultMaxOpacity), this._minOpacity = 255 * (a.minOpacity || a.defaultMinOpacity), this._useGradientOpacity = !!a.useGradientOpacity },
+                    getCanvas: function() {
+                        return this.canvas
+                    },
+                    renderPartial: function(a) {
+                        this._drawAlpha(a), this._colorize()
+                    },
+                    renderAll: function(a) {
+                        this._clear(), this._drawAlpha(d(a)), this._colorize()
+                    },
+                    _updateGradient: function(a) {
+                        this._palette = b(a)
+                    },
+                    updateConfig: function(a) {
+                        a.gradient && this._updateGradient(a), this._setStyles(a)
+                    },
+                    setDimensions: function(a, b) {
+                        this._width = a, this._height = b, this.canvas.width = this.shadowCanvas.width = a, this.canvas.height = this.shadowCanvas.height = b
+                    },
+                    _clear: function() {
+                        this.shadowCtx.clearRect(0, 0, this._width, this._height), this.ctx.clearRect(0, 0, this._width, this._height)
+                    },
+                    _setStyles: function(a) {
+                        this._blur = 0 == a.blur ? 0 : a.blur || a.defaultBlur, a.backgroundColor && (this.canvas.style.backgroundColor = a.backgroundColor), this._opacity = 255 * (a.opacity || 0), this._maxOpacity = 255 * (a.maxOpacity || a.defaultMaxOpacity), this._minOpacity = 255 * (a.minOpacity || a.defaultMinOpacity), this._useGradientOpacity = !!a.useGradientOpacity
+                    },
                     _drawAlpha: function(a) {
                         var b = this._min = a.min,
                             d = this._max = a.max;
@@ -631,11 +813,24 @@ MHeatMap.prototype = {
                             g = this._min;
                         return b = Math.abs(f - g) * (e / 255) >> 0
                     },
-                    getDataURL: function() { return this.canvas.toDataURL() }
+                    getDataURL: function() {
+                        return this.canvas.toDataURL()
+                    }
                 }, a
             }(),
-            d = function() { var b = !1; return "canvas2d" === a.defaultRenderer && (b = c), b }(),
-            e = { merge: function() { for (var a = {}, b = arguments.length, c = 0; b > c; c++) { var d = arguments[c]; for (var e in d) a[e] = d[e] } return a } },
+            d = function() {
+                var b = !1;
+                return "canvas2d" === a.defaultRenderer && (b = c), b
+            }(),
+            e = {
+                merge: function() {
+                    for (var a = {}, b = arguments.length, c = 0; b > c; c++) {
+                        var d = arguments[c];
+                        for (var e in d) a[e] = d[e]
+                    }
+                    return a
+                }
+            },
             f = function() {
                 function c() {
                     var c = this._config = e.merge(a, arguments[0] || {});
@@ -648,11 +843,15 @@ MHeatMap.prototype = {
                     g(this)
                 }
                 var f = function() {
-                        function a() { this.cStore = {} }
+                        function a() {
+                            this.cStore = {}
+                        }
                         return a.prototype = {
                             on: function(a, b, c) {
                                 var d = this.cStore;
-                                d[a] || (d[a] = []), d[a].push(function(a) { return b.call(c, a) })
+                                d[a] || (d[a] = []), d[a].push(function(a) {
+                                    return b.call(c, a)
+                                })
                             },
                             emit: function(a, b) {
                                 var c = this.cStore;
@@ -668,10 +867,63 @@ MHeatMap.prototype = {
                         var b = a._renderer,
                             c = a._coordinator,
                             d = a._store;
-                        c.on("renderpartial", b.renderPartial, b), c.on("renderall", b.renderAll, b), c.on("extremachange", function(b) { a._config.onExtremaChange && a._config.onExtremaChange({ min: b.min, max: b.max, gradient: a._config.gradient || a._config.defaultGradient }) }), d.setCoordinator(c)
+                        c.on("renderpartial", b.renderPartial, b), c.on("renderall", b.renderAll, b), c.on("extremachange", function(b) {
+                            a._config.onExtremaChange && a._config.onExtremaChange({
+                                min: b.min,
+                                max: b.max,
+                                gradient: a._config.gradient || a._config.defaultGradient
+                            })
+                        }), d.setCoordinator(c)
                     };
-                return c.prototype = { getCanvas: function() { return this._renderer.getCanvas() }, setSize: function(a, b) { this._renderer.setSize(a, b) }, addData: function() { return this._store.addData.apply(this._store, arguments), this }, removeData: function() { return this._store.removeData && this._store.removeData.apply(this._store, arguments), this }, setData: function() { return this._store.setData.apply(this._store, arguments), this }, setDataMax: function() { return this._store.setDataMax.apply(this._store, arguments), this }, setDataMin: function() { return this._store.setDataMin.apply(this._store, arguments), this }, updateStoreConfig: function(a) { this._store && this._store.setOptions(a) }, configure: function(a) { return this._config = e.merge(this._config, a), this._renderer.updateConfig(this._config), this._coordinator.emit("renderall", this._store._getInternalData()), this }, repaint: function() { return this._coordinator.emit("renderall", this._store._getInternalData()), this }, getData: function() { return this._store.getData() }, getDataURL: function() { return this._renderer.getDataURL() }, getValueAt: function(a) { return this._store.getValueAt ? this._store.getValueAt(a) : this._renderer.getValueAt ? this._renderer.getValueAt(a) : null } }, c
+                return c.prototype = {
+                    getCanvas: function() {
+                        return this._renderer.getCanvas()
+                    },
+                    setSize: function(a, b) {
+                        this._renderer.setSize(a, b)
+                    },
+                    addData: function() {
+                        return this._store.addData.apply(this._store, arguments), this
+                    },
+                    removeData: function() {
+                        return this._store.removeData && this._store.removeData.apply(this._store, arguments), this
+                    },
+                    setData: function() {
+                        return this._store.setData.apply(this._store, arguments), this
+                    },
+                    setDataMax: function() {
+                        return this._store.setDataMax.apply(this._store, arguments), this
+                    },
+                    setDataMin: function() {
+                        return this._store.setDataMin.apply(this._store, arguments), this
+                    },
+                    updateStoreConfig: function(a) {
+                        this._store && this._store.setOptions(a)
+                    },
+                    configure: function(a) {
+                        return this._config = e.merge(this._config, a), this._renderer.updateConfig(this._config), this._coordinator.emit("renderall", this._store._getInternalData()), this
+                    },
+                    repaint: function() {
+                        return this._coordinator.emit("renderall", this._store._getInternalData()), this
+                    },
+                    getData: function() {
+                        return this._store.getData()
+                    },
+                    getDataURL: function() {
+                        return this._renderer.getDataURL()
+                    },
+                    getValueAt: function(a) {
+                        return this._store.getValueAt ? this._store.getValueAt(a) : this._renderer.getValueAt ? this._renderer.getValueAt(a) : null
+                    }
+                }, c
             }(),
-            g = { create: function(a) { return new f(a) }, register: function(b, c) { a.plugins[b] = c } };
+            g = {
+                create: function(a) {
+                    return new f(a)
+                },
+                register: function(b, c) {
+                    a.plugins[b] = c
+                }
+            };
         return g
     });

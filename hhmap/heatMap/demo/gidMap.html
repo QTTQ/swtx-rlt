@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body onload="init();">
+    <script type="text/javascript">
+        document.oncontextmenu = function() {
+            return false;
+        };
+    </script>
+    <fieldset style="display:inline;float:left;">
+        <legend>Data</legend>
+        <table>
+            <tbody>
+                <tr>
+                    <td rowspan="2"><textarea id="sourceData" cols="110" rows="3"></textarea></td>
+                    <td><input type="button" value="Append" onclick="Append();"></td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="Random(500)" onclick="RandomPoints(500);"></td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+    <fieldset style="display:inline;float:left;">
+        <legend>Operate</legend>
+        <input type="button" id="onSwitch" value="ON" onclick="Show();" style="width:45px"><input type="button" id="offSwitch" value="OFF" onclick="Hide();" style="display:none;width:45px">
+        <input type="button" value="Reset" onclick="Reset();"><br><br> Grid
+        <select id="gridsize" onchange="ChangeSize();"><option value="0">big</option><option value="1" selected="true">middle</option><option value="2">small</option><option value="3">very small</option></select> Style
+        <select id="styleselect" onchange="ChangeStyle();"><option value="styleDef()">Depth(default)</option><option value="style1()">Mine</option><option value="style2()">Images</option><option value="style3()">HeatMap</option></select>
+    </fieldset>
+    <br>
+    <div id="map1" style="width:1000px;height:550px;display:inline-block;"></div>
+    <script type="text/javascript" src="mapbard31.3.js"></script>
+    <script type="text/javascript">
+        var maplet = null;
+        var gridmap = null;
+
+        function init() {
+            maplet = new Maplet("map1");
+            maplet.showOverview(false);
+            maplet.centerAndZoom(new MPoint(116.37994, 39.90675), 12);
+            var height, width;
+            if (document.documentElement && document.documentElement.clientHeight && document.documentElement.clientWidth) {
+                height = document.documentElement.clientHeight - 115;
+                width = document.documentElement.clientWidth - 20;
+            } else {
+                height = window.screen.availHeight - 115;
+                width = window.screen.availWidth - 20;
+            }
+            maplet.resize(width, height);
+            Maplet.plugin(['MHeatMap.js', 'gridmap-2.3-plugin.min.js'], function(m, n) {
+                gridmap = n;
+                gridmap.init(maplet, 18);
+            });
+        }
+
+        function styleDef() {
+            return null;
+        }
+
+        function style1() {
+            return function(valueInfo, viewInfo) {
+                var avgValue = valueInfo.total / valueInfo.count;
+                var rect = {
+                    lineWidth: 1,
+                    strokeStyle: "rgba(0,0,0,0.6)"
+                };
+                var text = {
+                    showType: "inmap",
+                    content: valueInfo.value,
+                    fillStyle: "rgba(0,0,0,1)",
+                    font: "bolder 18px sans-serif"
+                };
+                if (valueInfo.value == 0) {
+                    text = null;
+                    //rect.fillType = "Linear";
+                    //rect.fillStyle = "0 0 0 " + viewInfo.gridSizePixel + " 0 rgba(255,0,0,0.2) 0.5 rgba(0,255,0,0.2) 1 rgba(0,0,255,0.2)";
+                    rect.fillType = "none";
+                } else if (valueInfo.value <= avgValue * 2 / 3) {
+                    rect.fillType = "solid",
+                        rect.fillStyle = "rgba(0,0,255,0.4)";
+                } else if (valueInfo.value <= avgValue * 4 / 3) {
+                    rect.fillType = "solid",
+                        rect.fillStyle = "rgba(255,255,0,0.4)";
+                } else {
+                    rect.fillType = "solid",
+                        rect.fillStyle = "rgba(255,0,0,0.4)";
+                }
+                return {
+                    rect: rect,
+                    text: text
+                };
+            };
+        }
+
+        function style2() {
+            return function(valueInfo, viewInfo) {
+                var avgValue = valueInfo.total / valueInfo.count;
+                var rect = {
+                    lineWidth: 1,
+                    strokeStyle: "rgba(0,0,0,0.6)"
+                };
+                var text = {
+                    showType: "popup",
+                    content: "<div style='background-color:#ffffff;border:1px solid black'>" + (valueInfo.value / valueInfo.max * 100) + "%</div>"
+                };
+                if (valueInfo.value == 0) {
+                    text = null;
+                    rect.fillType = "none";
+                } else if (valueInfo.value < avgValue) {
+                    rect.fillType = "image",
+                        rect.fillStyle = "sb01.png";
+                } else {
+                    rect.fillType = "image",
+                        rect.fillStyle = "cg01.png";
+                }
+                return {
+                    rect: rect,
+                    text: text
+                };
+            };
+        }
+
+        function style3() {
+            return function(valueInfo, viewInfo) {
+                var avgValue = valueInfo.total / valueInfo.count;
+                var rect = {
+                    lineWidth: 1,
+                    strokeStyle: "rgba(0,0,0,0.0)"
+                };
+                var text = {
+                    showType: "popup",
+                    content: "<div style='background-color:#ffffff;border:1px solid black'>" + valueInfo.value + "</div>"
+                };
+                rect.fillType = "heatmap";
+                return {
+                    rect: rect,
+                    text: text
+                };
+            };
+        }
+
+        var dataMap = null;
+
+        function RandomPoints(size) {
+            var bounds = maplet.getViewBound();
+            var left = parseFloat(bounds.LeftDown.split(",")[0]);
+            var down = parseFloat(bounds.LeftDown.split(",")[1]);
+            var width = parseFloat(bounds.RightUp.split(",")[0]) - left;
+            var height = parseFloat(bounds.LeftUp.split(",")[1]) - down;
+
+            var dataArray = [];
+            for (var i = 0; i < size; i++) {
+                dataArray.push([(Math.random() * width + left).toFixed(5), (Math.random() * height + down).toFixed(5)]);
+            }
+            gridmap.appendData(dataArray);
+        }
+
+        function Reset() {
+            gridmap.reset();
+        }
+
+        function Append() {
+            gridmap.appendData(readData());
+        }
+
+        function readData() {
+            var sourceData = document.getElementById('sourceData');
+            var dataArray = sourceData.value.split(';');
+            for (var d in dataArray) {
+                dataArray[d] = dataArray[d].split(',');
+            }
+            sourceData.innerHTML = "";
+            return dataArray;
+        }
+
+        function ChangeSize() {
+            gridmap.setSize(parseInt(document.getElementById('gridsize').value));
+        }
+
+        function ChangeStyle() {
+            gridmap.setRander(eval(document.getElementById('styleselect').value));
+        }
+
+        function Show() {
+            document.getElementById("onSwitch").style.display = "none";
+            document.getElementById("offSwitch").style.display = "inline-block";
+            ChangeSize();
+            gridmap.show();
+        }
+
+        function Hide() {
+            document.getElementById("onSwitch").style.display = "inline-block";
+            document.getElementById("offSwitch").style.display = "none";
+            gridmap.hide();
+        }
+    </script>
+
+</body>
+
+</html>
