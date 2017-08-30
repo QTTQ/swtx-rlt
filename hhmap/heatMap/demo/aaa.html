@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+    <title>HTML5每日一练之Canvas标签的应用-绘制矩形</title>
+    <script language="javascript" type="text/javascript">
+        window.onload = function() {
+            var canvas = $.getId("W3Cfuns_canvas")
+            var content = canvas.getContext("2d"); //取得图形上下文 graphics context 
+
+            content.fillStyle = "#eeeeff"; //填充canvas的背景颜色 
+            content.fillRect(0, 0, 400, 300); //参数分别表示 x轴,y轴,宽度,高度 
+            content.lineWidth = 10; //边框宽度 
+
+            content.strokeStyle = "blue"; //边框颜色 
+            content.strokeRect(50, 50, 100, 100); //边框坐标及大小,试试这个后面的这个代码您就明白了content.strokeRect(50,50,150,150); 
+
+            content.fillStyle = "#f00"; //矩形填充颜色 
+            content.fillRect(50, 50, 100, 100); //矩形坐标及大小 
+
+        }
+
+        var $ = {
+            getId: function(_id) {
+                return document.getElementById(_id);
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <canvas id="W3Cfuns_canvas" width="400" height="300"></canvas>
+</body>
+
+</html>
